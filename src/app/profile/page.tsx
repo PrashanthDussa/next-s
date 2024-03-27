@@ -1,34 +1,50 @@
 "use client";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import React from "react";
-import { get } from "http";
+import Link from "next/link";
+import React, {useState} from "react";
+import {toast} from "react-hot-toast";
+import {useRouter} from "next/navigation";
+
 
 export default function ProfilePage() {
-    const [user, setUser] = React.useState("")
-    const router = useRouter();
-    async function handleLogout() {
+    const router = useRouter()
+    const [data, setData] = useState("nothing")
+    const logout = async () => {
         try {
-            await axios.get("/api/users/logout");
-            toast.success("Logout successful");
-            router.push("/login");
+            await axios.get('/api/users/logout')
+            toast.success('Logout successful')
+            router.push('/login')
         } catch (error:any) {
             console.log(error.message);
+            toast.error(error.message)
         }
     }
-    async function getUser() {
-        const response = await axios.get("/api/users/me");
-        setUser(response.data.data.username);
+
+    const getUserDetails = async () => {
+        const res = await axios.get('/api/users/me')
+        console.log(res.data);
+        setData(res.data.data._id)
     }
-    React.useEffect(() => {
-        getUser();
-    },[])
+
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <h1 className="text-4xl font-bold">Profile Page</h1>
-            {user!="" && <h2 className="text-2xl mt-4">Welcome, {user}</h2>}
-            <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleLogout}>Logout</button>
-        </div>
+        <div className="flex flex-col items-center justify-center min-h-screen py-2">
+            <h1>Profile</h1>
+            <hr />
+            <p>Profile page</p>
+            <h2 className="p-1 rounded bg-green-500">{data === 'nothing' ? "Nothing" : <Link href={`/profile/${data}`}>{data}
+            </Link>}</h2>
+        <hr />
+        <button
+        onClick={logout}
+        className="bg-blue-500 mt-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >Logout</button>
+
+        <button
+        onClick={getUserDetails}
+        className="bg-green-800 mt-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >GetUser Details</button>
+
+
+            </div>
     )
 }
