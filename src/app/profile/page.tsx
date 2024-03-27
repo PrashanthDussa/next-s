@@ -22,7 +22,7 @@ export default function ProfilePage() {
         async function getUser() {
             try {
                 const response = await axios.get("/api/users/me");
-                setUser(response.data.data.username);
+                setUser(response.data.user.username);
             } catch (error) {
                 console.error("Error fetching user data:", error);
                 router.push("/login");
